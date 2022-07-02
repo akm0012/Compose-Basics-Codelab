@@ -2,6 +2,8 @@ package com.andrewm.composebasicscodelab.ui.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.MaterialTheme.shapes
+import androidx.compose.material.MaterialTheme.typography
 import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
@@ -43,8 +45,8 @@ fun ComposeBasicsCodelabTheme(
 
     MaterialTheme(
         colors = colors,
-        typography = Typography,
-        shapes = Shapes,
+        typography = typography,
+        shapes = shapes,
         content = content
     )
 }
