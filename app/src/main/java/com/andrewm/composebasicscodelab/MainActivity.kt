@@ -80,7 +80,7 @@ fun Greeting(name: String) {
 @Composable
 fun DefaultPreview() {
     ComposeBasicsCodelabTheme {
-        MyApp()
+        Greetings()
     }
 }
 
