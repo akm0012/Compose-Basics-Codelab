@@ -3,9 +3,13 @@ package com.andrewm.composebasicscodelab
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -27,7 +31,8 @@ class MainActivity : ComponentActivity() {
 @Composable
 private fun MyApp() {
 
-    var shouldShowOnboarding by remember { mutableStateOf(true) }
+    // Note: rememberSaveable will remember over config changes (screen rotation, dark mode)
+    var shouldShowOnboarding by rememberSaveable { mutableStateOf(true) }
 
     if (shouldShowOnboarding) {
         OnboardingScreen(onContinueClicked = { shouldShowOnboarding = false })
@@ -37,9 +42,9 @@ private fun MyApp() {
 }
 
 @Composable
-private fun Greetings(names: List<String> = listOf("World", "Android", "Everyone")) {
-    Column(modifier = Modifier.padding(vertical = 4.dp)) {
-        for (name in names) {
+private fun Greetings(names: List<String> = List(1000) { "$it" }) {
+    LazyColumn(modifier = Modifier.padding(vertical = 4.dp)) {
+        items(items = names) { name ->
             Greeting(name = name)
         }
     }
@@ -49,7 +54,14 @@ private fun Greetings(names: List<String> = listOf("World", "Android", "Everyone
 fun Greeting(name: String) {
 
     var expanded by remember { mutableStateOf(false) }
-    val extraPadding = if (expanded) 48.dp else 0.dp
+
+    val extraPadding by animateDpAsState(
+        if (expanded) 48.dp else 0.dp,
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioMediumBouncy,
+            stiffness = Spring.StiffnessLow,
+        )
+    )
 
     Surface(
         color = MaterialTheme.colors.primary,
@@ -61,14 +73,15 @@ fun Greeting(name: String) {
             Column(
                 modifier = Modifier
                     .weight(1f)
-                    .padding(bottom = extraPadding)
+                    .padding(bottom = extraPadding.coerceAtLeast(0.dp))
             ) {
                 Text(text = "Hello,")
                 Text(text = "$name!")
             }
 
             OutlinedButton(
-                onClick = { expanded = !expanded }) {
+                onClick = { expanded = !expanded }
+            ) {
                 Text(text = if (expanded) "Show less" else "Show more")
             }
         }
@@ -95,7 +108,7 @@ fun OnboardingScreen(onContinueClicked: () -> Unit) {
             Text("Welcome to the Basics Codelab!")
             Button(
                 modifier = Modifier.padding(vertical = 24.dp),
-                onClick =  onContinueClicked
+                onClick = onContinueClicked
             ) {
                 Text("Continue")
             }
